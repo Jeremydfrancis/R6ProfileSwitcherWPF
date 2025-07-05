@@ -1,0 +1,161 @@
+﻿<Window x:Class="R6ProfileSwitcherWPF.Views.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:viewmodels="clr-namespace:R6ProfileSwitcherWPF.ViewModels"
+        xmlns:models="clr-namespace:R6ProfileSwitcherWPF.Models"
+        mc:Ignorable="d"
+        Title="{Binding WindowTitle}"
+        Height="600"
+        Width="1000"
+        Background="{StaticResource BrushNearBlack}">
+
+    <Window.DataContext>
+        <viewmodels:MainWindowViewModel />
+    </Window.DataContext>
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <!-- Title Bar -->
+        <Border Grid.Row="0"
+                Background="{StaticResource BrushDarkGray}"
+                Padding="20">
+            <TextBlock Text="{Binding WindowTitle}"
+                       Foreground="{StaticResource BrushLightBeige}"
+                       FontSize="28"
+                       FontWeight="Bold"
+                       HorizontalAlignment="Center"
+                       TextAlignment="Center"/>
+        </Border>
+
+        <!-- Tab Control -->
+        <TabControl Grid.Row="1"
+                    Background="{StaticResource BrushNearBlack}"
+                    SelectedIndex="{Binding SelectedRole, Mode=TwoWay}">
+
+            <!-- Attackers Tab -->
+            <TabItem Header="Attackers">
+                <ScrollViewer Background="{StaticResource BrushNearBlack}">
+                    <ItemsControl ItemsSource="{Binding FilteredOperators}">
+                        <ItemsControl.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <WrapPanel HorizontalAlignment="Center" />
+                            </ItemsPanelTemplate>
+                        </ItemsControl.ItemsPanel>
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate DataType="{x:Type models:Operator}">
+                                <Button Style="{StaticResource OperatorCardButtonStyle}"
+                                        Command="{Binding DataContext.SelectOperatorCommand, RelativeSource={RelativeSource AncestorType=Window}}"
+                                        CommandParameter="{Binding}">
+                                    <Border Background="Transparent">
+                                        <StackPanel>
+                                            <Image Source="{Binding ImagePath}"
+                                                   Style="{StaticResource OperatorImageStyle}" />
+                                            <TextBlock Text="{Binding Number}"
+Style="{StaticResource OperatorNameTextStyle}" />
+                                            <TextBlock Text="{Binding Name}"
+                                                       Style="{StaticResource OperatorNameTextStyle}" />
+                                        </StackPanel>
+                                    </Border>
+                                </Button>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </ScrollViewer>
+            </TabItem>
+
+            <!-- Defenders Tab -->
+            <TabItem Header="Defenders">
+                <ScrollViewer Background="{StaticResource BrushNearBlack}">
+                    <ItemsControl ItemsSource="{Binding FilteredOperators}">
+                        <ItemsControl.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <WrapPanel HorizontalAlignment="Center" />
+                            </ItemsPanelTemplate>
+                        </ItemsControl.ItemsPanel>
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate DataType="{x:Type models:Operator}">
+                                <Button Style="{StaticResource OperatorCardButtonStyle}"
+                                        Command="{Binding DataContext.SelectOperatorCommand, RelativeSource={RelativeSource AncestorType=Window}}"
+                                        CommandParameter="{Binding}">
+                                    <Border Background="Transparent">
+                                        <StackPanel>
+                                            <Image Source="{Binding ImagePath}"
+                                                   Style="{StaticResource OperatorImageStyle}" />
+                                            <TextBlock Text="{Binding Number}"
+           Style="{StaticResource OperatorNameTextStyle}" />
+                                            <TextBlock Text="{Binding Name}"
+                                                       Style="{StaticResource OperatorNameTextStyle}" />
+                                        </StackPanel>
+                                    </Border>
+                                </Button>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </ScrollViewer>
+            </TabItem>
+
+            <!-- Hotkeys Tab -->
+            <TabItem Header="Hotkeys">
+                <ScrollViewer Background="{StaticResource BrushNearBlack}"
+                  Padding="40">
+                    <Border Background="{StaticResource BrushDarkGray}"
+                CornerRadius="10"
+                Padding="30"
+                Effect="{StaticResource OperatorCardShadow}">
+                        <StackPanel HorizontalAlignment="Center">
+                            <!-- Optional Icon -->
+                            <TextBlock Text="⚡"
+                           FontSize="48"
+                           Foreground="{StaticResource BrushGlowActive}"
+                           TextAlignment="Center"
+                           Margin="0,0,0,10"/>
+
+                            <TextBlock Text="Hotkey Mode Instructions"
+                           Foreground="{StaticResource BrushLightBeige}"
+                           FontSize="26"
+                           FontWeight="Bold"
+                           TextAlignment="Center"
+                           Margin="0,0,0,20"/>
+
+                            <TextBlock TextAlignment="Center"
+                           TextWrapping="Wrap"
+                           FontSize="16"
+                           Foreground="{StaticResource BrushLightBeige}">
+                    <Run Text="Press "/>
+                    <Run Text="Ctrl + F12" Foreground="{StaticResource BrushGlowActive}" FontWeight="Bold"/>
+                    <Run Text=" to enter Hotkey Mode. Then type the operator number and press "/>
+                    <Run Text="Enter" Foreground="{StaticResource BrushGlowActive}" FontWeight="Bold"/>
+                    <Run Text=". Press "/>
+                    <Run Text="Escape" Foreground="{StaticResource BrushGlowActive}" FontWeight="Bold"/>
+                    <Run Text=" to cancel hotkey mode at any time."/>
+                            </TextBlock>
+
+                            <TextBlock TextAlignment="Center"
+                           Margin="0,20,0,0"
+                           FontSize="16"
+                           Foreground="{StaticResource BrushLightBeige}"
+                           FontWeight="Bold">
+                    Example:
+                            </TextBlock>
+
+                            <TextBlock TextAlignment="Center"
+                           FontSize="16"
+                           Foreground="{StaticResource BrushGlowActive}"
+                           Margin="0,5,0,0">
+                    Press Ctrl+F12 → Type "14" → Press Enter
+                            </TextBlock>
+                        </StackPanel>
+                    </Border>
+                </ScrollViewer>
+            </TabItem>
+
+
+        </TabControl>
+    </Grid>
+</Window>
