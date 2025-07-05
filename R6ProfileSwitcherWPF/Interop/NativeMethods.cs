@@ -5,14 +5,13 @@ namespace R6ProfileSwitcherWPF.Interop
 {
     internal static class NativeMethods
     {
-        internal const uint INPUT_MOUSE = 0;
-        internal const uint INPUT_KEYBOARD = 1;
-        internal const uint INPUT_HARDWARE = 2;
+        internal const int INPUT_MOUSE = 0;
+        internal const int INPUT_KEYBOARD = 1;
+        internal const int INPUT_HARDWARE = 2;
 
-        internal const uint KEYEVENTF_EXTENDEDKEY = 0x0001;
         internal const uint KEYEVENTF_KEYUP = 0x0002;
         internal const uint KEYEVENTF_SCANCODE = 0x0008;
-        internal const uint KEYEVENTF_UNICODE = 0x0004;
+        internal const uint KEYEVENTF_EXTENDEDKEY = 0x0001;
 
         [DllImport("user32.dll", SetLastError = true)]
         internal static extern uint SendInput(
@@ -24,8 +23,8 @@ namespace R6ProfileSwitcherWPF.Interop
         [StructLayout(LayoutKind.Sequential)]
         internal struct INPUT
         {
-            public uint type;
-            public InputUnion u;
+            public int type;
+            public InputUnion U;
         }
 
         [StructLayout(LayoutKind.Explicit)]

@@ -65,15 +65,14 @@ namespace R6ProfileSwitcherWPF.ViewModels
             if (parameter is Operator selected)
             {
                 foreach (var op in AllOperators)
-                {
                     op.IsSelected = false;
-                }
 
                 selected.IsSelected = true;
                 SelectedOperator = selected;
 
                 FilterOperators();
 
+                // Simulate the hotkey press for the selected operator
                 SimulateKeyPress(selected.Number);
             }
         }
@@ -99,6 +98,14 @@ namespace R6ProfileSwitcherWPF.ViewModels
 
         public void HandleKeyPress(KeyEventArgs e)
         {
+            // 🚫 Ignore simulated keys (those not physically pressed)
+            if (!Keyboard.IsKeyDown(e.Key))
+            {
+                Debug.WriteLine($"IGNORING simulated key: {e.Key}");
+                e.Handled = true;
+                return;
+            }
+
             Debug.WriteLine($"Key pressed: {e.Key}");
 
             if (!IsHotkeyModeActive)
@@ -240,70 +247,53 @@ namespace R6ProfileSwitcherWPF.ViewModels
                 }
                 catch
                 {
-                    // Ignore
+                    // Ignore errors
                 }
             }
 
             return $"pack://application:,,,/Resources/Images/Placeholder.png";
         }
 
-        private static void SimulateKeyPress(int number)
+        private void SimulateKeyPress(int number)
         {
-            // Example: Press the virtual key for A (0x41) down and up
-            var inputDown = new NativeMethods.INPUT
+            Debug.WriteLine($"Simulating key presses for operator number: {number}");
+
+            var inputs = new List<NativeMethods.INPUT>();
+
+            // Digits
+            var digits = number.ToString();
+            foreach (char digit in digits)
             {
-                type = NativeMethods.INPUT_KEYBOARD,
-                u = new NativeMethods.InputUnion
-                {
-                    ki = new NativeMethods.KEYBDINPUT
-                    {
-                        wVk = 0x41,      // Virtual-Key 'A'
-                        wScan = 0,       // Or the scan code for 'A' if you use scancodes
-                        dwFlags = 0,
-                        time = 0,
-                        dwExtraInfo = IntPtr.Zero
-                    }
-                }
-            };
+                ushort vk = (ushort)(0x30 + (digit - '0'));
+                inputs.Add(CreateKeyDown(vk));
+                inputs.Add(CreateKeyUp(vk));
+            }
 
-            var inputUp = new NativeMethods.INPUT
-            {
-                type = NativeMethods.INPUT_KEYBOARD,
-                u = new NativeMethods.InputUnion
-                {
-                    ki = new NativeMethods.KEYBDINPUT
-                    {
-                        wVk = 0x41,
-                        wScan = 0,
-                        dwFlags = NativeMethods.KEYEVENTF_KEYUP,
-                        time = 0,
-                        dwExtraInfo = IntPtr.Zero
-                    }
-                }
-            };
+            // Enter
+            inputs.Add(CreateKeyDown(0x0D));
+            inputs.Add(CreateKeyUp(0x0D));
 
-            var inputs = new[] { inputDown, inputUp };
-
-            uint result = NativeMethods.SendInput(
-                (uint)inputs.Length,
-                inputs,
+            uint sent = NativeMethods.SendInput(
+                (uint)inputs.Count,
+                inputs.ToArray(),
                 Marshal.SizeOf(typeof(NativeMethods.INPUT))
             );
 
-            if (result == 0)
+            if (sent == 0)
             {
                 int error = Marshal.GetLastWin32Error();
                 Debug.WriteLine($"SendInput failed. Error code: {error}");
             }
             else
             {
-                Debug.WriteLine("SendInput succeeded!");
+                Debug.WriteLine($"SendInput succeeded. Events sent: {sent}");
             }
         }
+
         private static NativeMethods.INPUT CreateKeyDown(ushort vk) => new()
         {
             type = NativeMethods.INPUT_KEYBOARD,
-            u = new NativeMethods.InputUnion
+            U = new NativeMethods.InputUnion
             {
                 ki = new NativeMethods.KEYBDINPUT
                 {
@@ -319,7 +309,7 @@ namespace R6ProfileSwitcherWPF.ViewModels
         private static NativeMethods.INPUT CreateKeyUp(ushort vk) => new()
         {
             type = NativeMethods.INPUT_KEYBOARD,
-            u = new NativeMethods.InputUnion
+            U = new NativeMethods.InputUnion
             {
                 ki = new NativeMethods.KEYBDINPUT
                 {
@@ -331,8 +321,6 @@ namespace R6ProfileSwitcherWPF.ViewModels
                 }
             }
         };
-
-
 
         private void FilterOperators()
         {
