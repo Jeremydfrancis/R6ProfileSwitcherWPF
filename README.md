@@ -16,9 +16,15 @@
 
 ## 📸 Screenshots
 
-*(Add screenshots here. For example, drag and drop an image into this README on GitHub to embed it.)*
+
+![Atttackers](https://github.com/user-attachments/assets/1d455095-6c03-4c01-bd3c-641f762dc124)
+
+![Defenders](https://github.com/user-attachments/assets/1da236c3-10fa-4952-82ed-d6ddbe27437d)
+
+![Hotkeys](https://github.com/user-attachments/assets/a7dd2267-0278-445a-b75a-a9654c99c6df)
 
 ---
+
 
 ## 🚀 Tech Stack
 
