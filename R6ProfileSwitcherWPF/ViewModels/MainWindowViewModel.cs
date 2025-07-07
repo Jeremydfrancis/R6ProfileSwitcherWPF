@@ -2,11 +2,9 @@
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Linq;
-using System.Runtime.InteropServices;
-using System.Windows;
 using System.Windows.Input;
+
 using R6ProfileSwitcherWPF.Models;
-using R6ProfileSwitcherWPF.Interop;
 
 namespace R6ProfileSwitcherWPF.ViewModels
 {
@@ -72,8 +70,9 @@ namespace R6ProfileSwitcherWPF.ViewModels
 
                 FilterOperators();
 
-                // Simulate the hotkey press for the selected operator
-                SimulateKeyPress(selected.Number);
+                Debug.WriteLine($"Operator selected: {selected.Name}");
+
+                // Later: navigate to operator detail page instead of sending keystrokes
             }
         }
 
@@ -95,17 +94,8 @@ namespace R6ProfileSwitcherWPF.ViewModels
         }
 
         private string _digitBuffer = "";
-
         public void HandleKeyPress(KeyEventArgs e)
         {
-            // 🚫 Ignore simulated keys (those not physically pressed)
-            if (!Keyboard.IsKeyDown(e.Key))
-            {
-                Debug.WriteLine($"IGNORING simulated key: {e.Key}");
-                e.Handled = true;
-                return;
-            }
-
             Debug.WriteLine($"Key pressed: {e.Key}");
 
             if (!IsHotkeyModeActive)
@@ -238,7 +228,7 @@ namespace R6ProfileSwitcherWPF.ViewModels
                 try
                 {
                     var uri = new Uri($"pack://application:,,,/Resources/Images/{name}{ext}", UriKind.Absolute);
-                    var info = Application.GetResourceStream(uri);
+                    var info = System.Windows.Application.GetResourceStream(uri);
                     if (info != null)
                     {
                         info.Stream.Dispose();
@@ -253,74 +243,6 @@ namespace R6ProfileSwitcherWPF.ViewModels
 
             return $"pack://application:,,,/Resources/Images/Placeholder.png";
         }
-
-        private void SimulateKeyPress(int number)
-        {
-            Debug.WriteLine($"Simulating key presses for operator number: {number}");
-
-            var inputs = new List<NativeMethods.INPUT>();
-
-            // Digits
-            var digits = number.ToString();
-            foreach (char digit in digits)
-            {
-                ushort vk = (ushort)(0x30 + (digit - '0'));
-                inputs.Add(CreateKeyDown(vk));
-                inputs.Add(CreateKeyUp(vk));
-            }
-
-            // Enter
-            inputs.Add(CreateKeyDown(0x0D));
-            inputs.Add(CreateKeyUp(0x0D));
-
-            uint sent = NativeMethods.SendInput(
-                (uint)inputs.Count,
-                inputs.ToArray(),
-                Marshal.SizeOf(typeof(NativeMethods.INPUT))
-            );
-
-            if (sent == 0)
-            {
-                int error = Marshal.GetLastWin32Error();
-                Debug.WriteLine($"SendInput failed. Error code: {error}");
-            }
-            else
-            {
-                Debug.WriteLine($"SendInput succeeded. Events sent: {sent}");
-            }
-        }
-
-        private static NativeMethods.INPUT CreateKeyDown(ushort vk) => new()
-        {
-            type = NativeMethods.INPUT_KEYBOARD,
-            U = new NativeMethods.InputUnion
-            {
-                ki = new NativeMethods.KEYBDINPUT
-                {
-                    wVk = vk,
-                    wScan = 0,
-                    dwFlags = 0,
-                    time = 0,
-                    dwExtraInfo = IntPtr.Zero
-                }
-            }
-        };
-
-        private static NativeMethods.INPUT CreateKeyUp(ushort vk) => new()
-        {
-            type = NativeMethods.INPUT_KEYBOARD,
-            U = new NativeMethods.InputUnion
-            {
-                ki = new NativeMethods.KEYBDINPUT
-                {
-                    wVk = vk,
-                    wScan = 0,
-                    dwFlags = NativeMethods.KEYEVENTF_KEYUP,
-                    time = 0,
-                    dwExtraInfo = IntPtr.Zero
-                }
-            }
-        };
 
         private void FilterOperators()
         {
