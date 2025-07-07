@@ -25,7 +25,6 @@
 
 ---
 
-
 ## 🚀 Tech Stack
 
 - **.NET 7.0** (or your version)
@@ -44,3 +43,20 @@ Clone this repository:
 git clone https://github.com/jeremydfrancis/R6ProfileSwitcherWPF.git
 cd R6ProfileSwitcherWPF
 ```
+- Press F6 to Build the app
+- Or go to Build → Publish to create a distributable executable
+  
+---
+
+## 🔧 How to Run
+
+After building or publishing, run:
+```bash
+R6ProfileSwitcherWPF.exe
+```
+- Make sure you have the .NET Desktop Runtime installed.
+  
+---
+
+
+
