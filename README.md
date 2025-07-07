@@ -35,6 +35,6 @@
 Clone this repository:
 
 ```bash
-git clone https://github.com/yourusername/R6ProfileSwitcherWPF.git
+git clone https://github.com/jeremydfrancis/R6ProfileSwitcherWPF.git
 cd R6ProfileSwitcherWPF
 ```
